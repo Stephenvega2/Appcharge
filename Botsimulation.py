@@ -1,4 +1,4 @@
-import random
+import secrets
 import numpy as np
 import os
 import sqlite3
@@ -30,7 +30,7 @@ class Simulation:
     def create_bots(self, num_bots):
         """Initialize bots with unique behaviors."""
         for i in range(num_bots):
-            behavior = random.choice(["casual", "aggressive", "strategic"])
+            behavior = secrets.choice(["casual", "aggressive", "strategic"])
             self.bots.append({"id": f"bot_{i}", "behavior": behavior, "tokens": []})
 
     def generate_token(self, bot_id, rare=False):
@@ -43,7 +43,7 @@ class Simulation:
 
         token = {
             "owner": bot_id,
-            "energy_level": random.uniform(10, 100),
+            "energy_level": secrets.randbelow(90) + 10,  # random.uniform(10, 100)
             "rare": rare,
             "metadata": {
                 "sigma_x": sigma_x,
@@ -64,18 +64,18 @@ class Simulation:
     def bot_action(self, bot):
         """Simulate bot decision-making."""
         if bot["behavior"] == "casual":
-            if random.random() < 0.5:
+            if secrets.randbelow(100) < 50:
                 token = self.generate_token(bot["id"])
                 bot["tokens"].append(token)
         elif bot["behavior"] == "aggressive":
-            if random.random() < 0.7:
-                token = self.generate_token(bot["id"], rare=random.random() < 0.1)
+            if secrets.randbelow(100) < 70:
+                token = self.generate_token(bot["id"], rare=secrets.randbelow(100) < 10)
                 bot["tokens"].append(token)
-            if random.random() < 0.5 and bot["tokens"]:
+            if secrets.randbelow(100) < 50 and bot["tokens"]:
                 self.burn_token(bot)
         elif bot["behavior"] == "strategic":
-            if random.random() < 0.3:
-                token = self.generate_token(bot["id"], rare=random.random() < 0.2)
+            if secrets.randbelow(100) < 30:
+                token = self.generate_token(bot["id"], rare=secrets.randbelow(100) < 20)
                 bot["tokens"].append(token)
 
     def burn_token(self, bot):
