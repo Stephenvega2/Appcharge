@@ -5,6 +5,11 @@ import sqlite3
 import json
 import time
 
+def custom_encoder(obj):
+    if isinstance(obj, np.complex128):
+        return str(obj)
+    raise TypeError(f'Object of type {obj.__class__.__name__} is not JSON serializable')
+
 class Simulation:
     def __init__(self):
         self.tokens = []  # List of all tokens in circulation
@@ -55,7 +60,7 @@ class Simulation:
         self.cursor.execute('''
             INSERT INTO tokens (owner, energy_level, rare, metadata)
             VALUES (?, ?, ?, ?)
-        ''', (bot_id, token["energy_level"], int(rare), json.dumps(token["metadata"])))
+        ''', (bot_id, token["energy_level"], int(rare), json.dumps(token["metadata"], default=custom_encoder)))
         self.conn.commit()
 
         self.tokens.append(token)
