@@ -64,19 +64,31 @@ class Simulation:
     def bot_action(self, bot):
         """Simulate bot decision-making."""
         if bot["behavior"] == "casual":
-            if secrets.randbelow(100) < 50:
-                token = self.generate_token(bot["id"])
-                bot["tokens"].append(token)
+            self.casual_action(bot)
         elif bot["behavior"] == "aggressive":
-            if secrets.randbelow(100) < 70:
-                token = self.generate_token(bot["id"], rare=secrets.randbelow(100) < 10)
-                bot["tokens"].append(token)
-            if secrets.randbelow(100) < 50 and bot["tokens"]:
-                self.burn_token(bot)
+            self.aggressive_action(bot)
         elif bot["behavior"] == "strategic":
-            if secrets.randbelow(100) < 30:
-                token = self.generate_token(bot["id"], rare=secrets.randbelow(100) < 20)
-                bot["tokens"].append(token)
+            self.strategic_action(bot)
+
+    def casual_action(self, bot):
+        """Action for casual bots."""
+        if secrets.randbelow(100) < 50:
+            token = self.generate_token(bot["id"])
+            bot["tokens"].append(token)
+
+    def aggressive_action(self, bot):
+        """Action for aggressive bots."""
+        if secrets.randbelow(100) < 70:
+            token = self.generate_token(bot["id"], rare=secrets.randbelow(100) < 10)
+            bot["tokens"].append(token)
+        if secrets.randbelow(100) < 50 and bot["tokens"]:
+            self.burn_token(bot)
+
+    def strategic_action(self, bot):
+        """Action for strategic bots."""
+        if secrets.randbelow(100) < 30:
+            token = self.generate_token(bot["id"], rare=secrets.randbelow(100) < 20)
+            bot["tokens"].append(token)
 
     def burn_token(self, bot):
         """Simulate burning a token for a boost."""
@@ -90,19 +102,31 @@ class Simulation:
         """Calculate and return current ecosystem statistics."""
         total_tokens = len(self.tokens)
         rare_tokens = sum(1 for t in self.tokens if t["rare"])
-        avg_energy = np.mean([t["energy_level"] for t in self.tokens]) if self.tokens else 0
-        bot_token_counts = {bot["id"]: len(bot["tokens"]) for bot in self.bots}
-        behavior_counts = {
-            "casual": len([b for b in self.bots if b["behavior"] == "casual"]),
-            "aggressive": len([b for b in self.bots if b["behavior"] == "aggressive"]),
-            "strategic": len([b for b in self.bots if b["behavior"] == "strategic"])
-        }
+        avg_energy = self.calculate_avg_energy()
+        bot_token_counts = self.calculate_bot_token_counts()
+        behavior_counts = self.calculate_behavior_counts()
         return {
             "total_tokens": total_tokens,
             "rare_tokens": rare_tokens,
             "avg_energy": avg_energy,
             "bot_token_counts": bot_token_counts,
             "behavior_counts": behavior_counts
+        }
+
+    def calculate_avg_energy(self):
+        """Calculate average energy of tokens."""
+        return np.mean([t["energy_level"] for t in self.tokens]) if self.tokens else 0
+
+    def calculate_bot_token_counts(self):
+        """Calculate the number of tokens each bot has."""
+        return {bot["id"]: len(bot["tokens"]) for bot in self.bots}
+
+    def calculate_behavior_counts(self):
+        """Calculate the distribution of bot behaviors."""
+        return {
+            "casual": len([b for b in self.bots if b["behavior"] == "casual"]),
+            "aggressive": len([b for b in self.bots if b["behavior"] == "aggressive"]),
+            "strategic": len([b for b in self.bots if b["behavior"] == "strategic"])
         }
 
     def print_ecosystem_status(self, round_num):
