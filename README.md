@@ -1,3 +1,4 @@
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/a368e693c21d483fa498d35812e7f655)](https://app.codacy.com/gh/Stephenvega2/Appcharge?utm_source=github.com&utm_medium=referral&utm_content=Stephenvega2/Appcharge&utm_campaign=Badge_Grade)
 [![CodeFactor](https://www.codefactor.io/repository/github/stephenvega2/appcharge/badge)](https://www.codefactor.io/repository/github/stephenvega2/appcharge)
 
 Gaslite Token: Powering Strategic Energy**
